@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Test application</string>
+    <string name="homescreen">Homescreen</string>
+    <string name="search">Search Recipes</string>
+    <string name="random">Random Recipes</string>
+    <string name="favorites">Favorites</string>
+    <string name="recipe_detail">Recipe Detail</string>
+</resources>
