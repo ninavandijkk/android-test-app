@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -43,7 +44,9 @@ fun FavoritesScreen(
             is ViewState.Loading -> {
                 Column(
                     verticalArrangement = Arrangement.Center,
-                    modifier = modifier.fillMaxHeight()
+                    modifier = modifier
+                        .fillMaxHeight()
+                        .padding(32.dp)
                 ) {
                     CircularProgressIndicator(
                         modifier = modifier.width(64.dp),
@@ -57,13 +60,16 @@ fun FavoritesScreen(
                 RecipeList(state.recipes, navController, vm)
             }
 
-            else -> {
+            is ViewState.Failure -> {
                 Column(
                     verticalArrangement = Arrangement.Center,
-                    modifier = modifier.fillMaxHeight()
+                    modifier = modifier
+                        .fillMaxHeight()
+                        .padding(16.dp)
                 ) {
                     Text(
-                        "Unable to find favorite recipes"
+                        state.message ?: "An error occurred",
+                        textAlign = TextAlign.Center
                     )
                 }
             }

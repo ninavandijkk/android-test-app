@@ -6,5 +6,5 @@ sealed class ViewState{
     object Init: ViewState()
     object Loading: ViewState()
     data class Success(val recipes: List<RecipeInterface>): ViewState()
-    object Failure: ViewState()
+    data class Failure(val message: String?): ViewState()
 }

@@ -10,5 +10,6 @@ class RecipeApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppDataContainer(this)
+        InternetService.instance.initializeWithApplicationContext(this)
     }
 }

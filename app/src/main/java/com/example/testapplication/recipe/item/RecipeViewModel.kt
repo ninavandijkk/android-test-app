@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class RecipeViewModel(
     private val service: ApiService,
@@ -31,24 +32,29 @@ class RecipeViewModel(
                 if(recipe != null){
                     (viewState as MutableStateFlow).emit(ViewState.Success(recipe, recipe.steps as List<PrepPartInterface>?))
                 } else {
-                    (viewState as MutableStateFlow).emit(ViewState.Failure)
+                    (viewState as MutableStateFlow).emit(ViewState.Failure("No recipes found"))
                 }
             } else {
-                val responseRecipe = service.getRecipeById(id)
-                val responsePrep = service.getRecipeInstructionsById(id)
+                try {
+                    val responseRecipe = service.getRecipeById(id)
+                    val responsePrep = service.getRecipeInstructionsById(id)
 
-                if (responseRecipe.isSuccessful){
-                    val bodyRecipe = responseRecipe.body()!!
-                    if(responsePrep.isSuccessful){
-                        val bodyPrep = responsePrep.body()!!
-                        Log.i("RecipeViewModel(item)", "${bodyPrep.first()}")
-                        (viewState as MutableStateFlow).emit(ViewState.Success(bodyRecipe, bodyPrep))
+                    if (responseRecipe.isSuccessful){
+                        val bodyRecipe = responseRecipe.body()!!
+                        if(responsePrep.isSuccessful){
+                            val bodyPrep = responsePrep.body()!!
+                            Log.i("RecipeViewModel(item)", "${bodyPrep.first()}")
+                            (viewState as MutableStateFlow).emit(ViewState.Success(bodyRecipe, bodyPrep))
+                        } else {
+                            (viewState as MutableStateFlow).emit(ViewState.Success(bodyRecipe, null))
+                        }
                     } else {
-                        (viewState as MutableStateFlow).emit(ViewState.Success(bodyRecipe, null))
+                        val errorResponse = responseRecipe
+                        Log.e("RecipeViewModel", "Call failed ${errorResponse.code()} ${errorResponse.errorBody()}")
+                        (viewState as MutableStateFlow).emit(ViewState.Failure(errorResponse.message()))
                     }
-                } else {
-                    Log.e("RecipeViewModel", "Call failed ${responseRecipe.code()} ${responseRecipe.errorBody()}")
-                    (viewState as MutableStateFlow).emit(ViewState.Failure)
+                } catch (e: IOException) {
+                    (viewState as MutableStateFlow).emit(ViewState.Failure(e.message))
                 }
             }
         }

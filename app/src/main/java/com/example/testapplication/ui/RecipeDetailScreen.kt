@@ -13,11 +13,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -68,7 +69,19 @@ fun RecipeDetailScreen(
                 RecipeView(state.recipe, state.prep, vm)
             }
 
-            else -> {}
+            is ViewState.Failure -> {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    modifier = modifier
+                        .fillMaxHeight()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        state.message ?: "An error occurred",
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         }
     }
 }
@@ -125,11 +138,16 @@ fun RecipeInfoCard(recipe: RecipeInterface, vm : RecipeViewModel, prep: List<Pre
                     "Preparation time: ${recipe.prepTime} minutes"
                 )
             }
-            Button(
+            IconButton(
                 onClick = {
                     vm.addRecipeToFavorites(recipe, prep)
                 }
-            ) { }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Favorite icon"
+                )
+            }
 
         }
     }

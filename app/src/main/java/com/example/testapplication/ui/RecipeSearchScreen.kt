@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -68,7 +69,19 @@ fun RecipeSearchScreen(
                 RecipeList(state.recipes, navController, vm)
             }
 
-            else -> {}
+            is ViewState.Failure -> {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    modifier = modifier
+                        .fillMaxHeight()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        state.message ?: "An error occurred",
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         }
     }
     Column(
