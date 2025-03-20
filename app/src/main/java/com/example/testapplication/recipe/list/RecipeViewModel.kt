@@ -1,10 +1,9 @@
 package com.example.testapplication.recipe.list
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.testapplication.ApiService
+import com.example.testapplication.data.api.ApiService
 import com.example.testapplication.data.Recipe
 import com.example.testapplication.data.RecipesRepository
 import com.example.testapplication.recipe.PrepPart
@@ -15,14 +14,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-class RecipeViewModel(private val service: ApiService, private val repository: RecipesRepository) : ViewModel() {
+class RecipeViewModel(private val repository: RecipesRepository) : ViewModel() {
     val viewState: StateFlow<ViewState> = MutableStateFlow(ViewState.Init)
 
     fun getRandomRecipes() {
         viewModelScope.launch(Dispatchers.IO) {
             (viewState as MutableStateFlow).emit(ViewState.Loading)
             try {
-                val response = service.getRandomRecipes()
+                val response = repository.getRandomRecipes()
 
                 if (response.isSuccessful){
                     val body = response.body()!!
@@ -42,7 +41,7 @@ class RecipeViewModel(private val service: ApiService, private val repository: R
         viewModelScope.launch(Dispatchers.IO) {
             (viewState as MutableStateFlow).emit(ViewState.Loading)
             try {
-                val response = service.searchRecipes(query)
+                val response = repository.searchRecipes(query)
 
                 Log.d("RecipeViewModel", "$response")
 
@@ -73,32 +72,11 @@ class RecipeViewModel(private val service: ApiService, private val repository: R
 
     fun addRecipeToFavorites(recipeIid: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d("RecipeViewModel(list)", "${repository.isFavorite(recipeIid)}")
+            val recipe = repository.getRecipeById(recipeIid)
             if(repository.isFavorite(recipeIid)){
-                val recipe = repository.getRecipeStream(recipeIid).first()
                 repository.deleteItem(recipe)
             } else {
-                val responseRecipe = service.getRecipeById(recipeIid)
-                val responsePrep = service.getRecipeInstructionsById(recipeIid)
-                if (responseRecipe.isSuccessful){
-                    val recipe = responseRecipe.body()!!
-                    var prep : List<PrepPart>? = null
-                    if(responsePrep.isSuccessful){
-                        prep = responsePrep.body()!!
-                    }
-                    val formatedRecipe = Recipe(
-                        iid = recipe.iid,
-                        title = recipe.title,
-                        isVegan = recipe.isVegan,
-                        isVegetarian = recipe.isVegetarian,
-                        prepTime = recipe.prepTime,
-                        nrOfServings = recipe.nrOfServings,
-                        imageUrl = recipe.imageUrl,
-                        ingredients = recipe.ingredients as List<com.example.testapplication.data.Ingredient>,
-                        steps = prep as List<com.example.testapplication.data.PrepPart>,
-                    )
-                    repository.insertItem(formatedRecipe)
-                }
+                repository.insertItem(recipe)
             }
         }
     }

@@ -1,5 +1,6 @@
-package com.example.testapplication
+package com.example.testapplication.data.api
 
+import com.example.testapplication.ConnectivityInterceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

@@ -1,4 +1,4 @@
-package com.example.testapplication
+package com.example.testapplication.data.api
 
 import com.example.testapplication.recipe.PrepPart
 import com.example.testapplication.recipe.RecipeModel

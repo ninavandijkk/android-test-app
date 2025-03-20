@@ -20,7 +20,7 @@ interface RecipeDao {
     suspend fun delete(recipe: Recipe)
 
     @Query("SELECT * from recipes WHERE iid = :iid")
-    fun getRecipe(iid: Int): Flow<Recipe>
+    fun getRecipe(iid: Int): Recipe
 
     @Query("SELECT * from recipes ORDER BY title ASC")
     fun getAllRecipes(): Flow<List<Recipe>>

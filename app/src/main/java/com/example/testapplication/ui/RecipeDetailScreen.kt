@@ -35,7 +35,6 @@ import coil3.compose.AsyncImage
 import com.example.testapplication.IngredientInterface
 import com.example.testapplication.PrepPartInterface
 import com.example.testapplication.PrepStepInterface
-import com.example.testapplication.RecipeInterface
 import com.example.testapplication.data.Recipe
 import com.example.testapplication.recipe.item.ViewState
 import com.example.testapplication.recipe.item.RecipeViewModel
@@ -66,7 +65,7 @@ fun RecipeDetailScreen(
                 }
             }
             is ViewState.Success -> {
-                RecipeView(state.recipe, state.prep, vm)
+                RecipeView(state.recipe, vm)
             }
 
             is ViewState.Failure -> {
@@ -87,20 +86,20 @@ fun RecipeDetailScreen(
 }
 
 @Composable
-fun RecipeView(recipe: RecipeInterface, prep: List<PrepPartInterface>?, vm : RecipeViewModel) {
+fun RecipeView(recipe: Recipe, vm : RecipeViewModel) {
     Column (
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .fillMaxHeight(),
     ) {
-        RecipeInfoCard(recipe, vm, prep)
+        RecipeInfoCard(recipe, vm)
         IngredientList(recipe.ingredients)
-        PrepPartList(prep)
+        PrepPartList(recipe.steps as List<PrepPartInterface>)
     }
 }
 
 @Composable
-fun RecipeInfoCard(recipe: RecipeInterface, vm : RecipeViewModel, prep: List<PrepPartInterface>?) {
+fun RecipeInfoCard(recipe: Recipe, vm : RecipeViewModel) {
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colorScheme.surfaceContainer)
@@ -140,7 +139,7 @@ fun RecipeInfoCard(recipe: RecipeInterface, vm : RecipeViewModel, prep: List<Pre
             }
             IconButton(
                 onClick = {
-                    vm.addRecipeToFavorites(recipe, prep)
+                    vm.addRecipeToFavorites(recipe)
                 }
             ) {
                 Icon(
@@ -175,8 +174,8 @@ fun IngredientList(ingredients: List<IngredientInterface>){
 }
 
 @Composable
-fun PrepPartList(prepParts: List<PrepPartInterface>?){
-    if (!prepParts.isNullOrEmpty()) {
+fun PrepPartList(prepParts: List<PrepPartInterface?>){
+    if (prepParts.isNotEmpty()) {
         Column (
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
         ) {
@@ -185,8 +184,8 @@ fun PrepPartList(prepParts: List<PrepPartInterface>?){
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
             )
-            for (prepPart: PrepPartInterface in prepParts) {
-                Text(prepPart.name)
+            for (prepPart: PrepPartInterface? in prepParts) {
+                Text(prepPart!!.name)
                 for (prepStep: PrepStepInterface in prepPart.steps) {
                     PrepStep(prepStep)
                 }
