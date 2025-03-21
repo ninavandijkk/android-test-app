@@ -66,7 +66,7 @@ fun RandomRecipeScreen(
                 }
             }
             is ViewState.Success -> {
-                RecipeList(state.recipes, navController, vm)
+                RecipeList(state.recipes, navController, vm, false)
             }
 
             is ViewState.Failure -> {

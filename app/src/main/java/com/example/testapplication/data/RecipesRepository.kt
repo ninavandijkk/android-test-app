@@ -1,6 +1,5 @@
 package com.example.testapplication.data
 
-import com.example.testapplication.RecipeInterface
 import com.example.testapplication.recipe.Recipes
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response

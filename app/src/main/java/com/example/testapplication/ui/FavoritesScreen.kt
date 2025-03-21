@@ -32,8 +32,7 @@ fun FavoritesScreen(
 
     Column(
         modifier = modifier
-            .heightIn(min = 16.dp, max = 32.dp)
-            .padding(vertical = 60.dp),
+            .heightIn(min = 16.dp, max = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         when (val state = viewState) {
@@ -57,7 +56,7 @@ fun FavoritesScreen(
             }
 
             is ViewState.Success -> {
-                RecipeList(state.recipes, navController, vm)
+                RecipeList(state.recipes, navController, vm, true)
             }
 
             is ViewState.Failure -> {

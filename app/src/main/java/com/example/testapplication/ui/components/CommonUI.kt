@@ -30,7 +30,7 @@ import com.example.testapplication.RecipeInterface
 import com.example.testapplication.recipe.list.RecipeViewModel
 
 @Composable
-fun RecipeList (recipes: List<RecipeInterface>, navController: NavController, vm: RecipeViewModel){
+fun RecipeList (recipes: List<RecipeInterface>, navController: NavController, vm: RecipeViewModel, onFavoritesPage: Boolean){
     if(recipes.isNotEmpty()){
         Column(
             verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -39,7 +39,7 @@ fun RecipeList (recipes: List<RecipeInterface>, navController: NavController, vm
                 .verticalScroll(rememberScrollState()),
         ) {
             for (recipe: RecipeInterface in recipes){
-                RecipeView(recipe, navController, vm)
+                RecipeView(recipe, navController, vm, onFavoritesPage)
             }
         }
     } else {
@@ -51,7 +51,7 @@ fun RecipeList (recipes: List<RecipeInterface>, navController: NavController, vm
 }
 
 @Composable
-fun RecipeView(recipe: RecipeInterface, navController: NavController, vm: RecipeViewModel) {
+fun RecipeView(recipe: RecipeInterface, navController: NavController, vm: RecipeViewModel, onFavoritesPage: Boolean) {
     val context = LocalContext.current
     Row(
         Modifier
@@ -98,6 +98,9 @@ fun RecipeView(recipe: RecipeInterface, navController: NavController, vm: Recipe
                 onClick = {
                     vm.addRecipeToFavorites(recipe.iid)
                     Toast.makeText(context, "Recipe added/removed from favorites", Toast.LENGTH_LONG).show()
+                    if(onFavoritesPage) {
+                        vm.getFavorites()
+                    }
                 }
             ) {
                 Icon(

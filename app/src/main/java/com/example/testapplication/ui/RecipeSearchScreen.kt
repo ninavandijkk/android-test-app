@@ -3,6 +3,7 @@ package com.example.testapplication.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -40,16 +41,19 @@ fun RecipeSearchScreen(
         modifier = modifier
             .heightIn(min = 16.dp, max = 32.dp)
             .padding(vertical = 60.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         when (val state = viewState) {
             is ViewState.Init -> {
                 Column(
                     verticalArrangement = Arrangement.Center,
-                    modifier = modifier.fillMaxHeight()
+                    modifier = modifier
+                        .fillMaxHeight()
+                        .padding(16.dp)
                 ) {
                     Text(
-                        "Type search in searchbar"
+                        "Type search in searchbar",
+                        textAlign = TextAlign.Center
                     )
                 }
             }
@@ -66,7 +70,7 @@ fun RecipeSearchScreen(
                 }
             }
             is ViewState.Success -> {
-                RecipeList(state.recipes, navController, vm)
+                RecipeList(state.recipes, navController, vm, false)
             }
 
             is ViewState.Failure -> {
@@ -89,6 +93,7 @@ fun RecipeSearchScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TextField(
+            modifier = Modifier.fillMaxWidth(),
             value = text,
             onValueChange = { text = it },
             label = { Text("Search recipes") }

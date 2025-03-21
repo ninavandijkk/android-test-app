@@ -3,14 +3,11 @@ package com.example.testapplication.recipe.list
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.testapplication.data.api.ApiService
-import com.example.testapplication.data.Recipe
 import com.example.testapplication.data.RecipesRepository
-import com.example.testapplication.recipe.PrepPart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -63,10 +60,10 @@ class RecipeViewModel(private val repository: RecipesRepository) : ViewModel() {
     fun getFavorites() {
         viewModelScope.launch(Dispatchers.IO) {
             (viewState as MutableStateFlow).emit(ViewState.Loading)
-            val recipes = repository.getAllRecipesStream()
 
-            Log.d("RecipeViewModel", "$recipes")
-            (viewState as MutableStateFlow).emit(ViewState.Success(recipes.first()))
+            repository.getAllRecipesStream().collectLatest {recipes ->
+                (viewState as MutableStateFlow).emit(ViewState.Success(recipes))
+            }
         }
     }
 
