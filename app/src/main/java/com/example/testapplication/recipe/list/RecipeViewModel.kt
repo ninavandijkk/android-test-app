@@ -18,15 +18,14 @@ class RecipeViewModel(private val repository: RecipesRepository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             (viewState as MutableStateFlow).emit(ViewState.Loading)
             try {
-                val response = repository.getRandomRecipes()
+                val recipes = repository.getRandomRecipes()
 
-                if (response.isSuccessful){
-                    val body = response.body()!!
-                    Log.d("RecipeViewModel", "$body")
-                    (viewState as MutableStateFlow).emit(ViewState.Success(body.recipeList))
+                if (recipes != null){
+                    Log.d("RecipeViewModel", "$recipes")
+                    (viewState as MutableStateFlow).emit(ViewState.Success(recipes.recipeList))
                 } else {
-                    Log.e("RecipeViewModel", "Call failed ${response.code()} ${response.errorBody()}")
-                    (viewState as MutableStateFlow).emit(ViewState.Failure(response.message()))
+                    Log.e("RecipeViewModel", "Call failed no recipes found")
+                    (viewState as MutableStateFlow).emit(ViewState.Failure("No recipes found"))
                 }
             } catch (e: IOException) {
                 (viewState as MutableStateFlow).emit(ViewState.Failure(e.message))
@@ -38,18 +37,14 @@ class RecipeViewModel(private val repository: RecipesRepository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             (viewState as MutableStateFlow).emit(ViewState.Loading)
             try {
-                val response = repository.searchRecipes(query)
+                val recipes = repository.searchRecipes(query)
 
-                Log.d("RecipeViewModel", "$response")
-
-                if (response.isSuccessful){
-                    val body = response.body()!!
-                    Log.d("RecipeViewModel", "$body")
-                    (viewState as MutableStateFlow).emit(ViewState.Success(body.searchResults))
+                if (recipes != null){
+                    Log.d("RecipeViewModel", "$recipes")
+                    (viewState as MutableStateFlow).emit(ViewState.Success(recipes.searchResults))
                 } else {
-                    val errorResponse = response
-                    Log.e("RecipeViewModel", "Call failed ${errorResponse.code()} ${errorResponse.errorBody()}")
-                    (viewState as MutableStateFlow).emit(ViewState.Failure(errorResponse.message()))
+                    Log.e("RecipeViewModel", "Call failed no recipes found")
+                    (viewState as MutableStateFlow).emit(ViewState.Failure("No recipes found"))
                 }
             } catch (e: IOException) {
                 (viewState as MutableStateFlow).emit(ViewState.Failure(e.message))

@@ -41,9 +41,9 @@ class OfflineRecipesRepository(private val recipeDao: RecipeDao, private val api
         }
     }
 
-    override suspend fun searchRecipes(query: String): Response<Recipes> = apiService.searchRecipes(query)
+    override suspend fun searchRecipes(query: String): Recipes? = apiService.searchRecipes(query).body()
 
-    override suspend fun getRandomRecipes(): Response<Recipes> = apiService.getRandomRecipes()
+    override suspend fun getRandomRecipes(): Recipes? = apiService.getRandomRecipes().body()
 
     override fun isFavorite(id: Int): Boolean = recipeDao.isFavorite(id)
 

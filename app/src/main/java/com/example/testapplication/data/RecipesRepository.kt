@@ -10,9 +10,9 @@ interface RecipesRepository {
 
     suspend fun getRecipeById(id: Int): Recipe
 
-    suspend fun searchRecipes(query: String): Response<Recipes>
+    suspend fun searchRecipes(query: String): Recipes?
 
-    suspend fun getRandomRecipes(): Response<Recipes>
+    suspend fun getRandomRecipes(): Recipes?
 
     fun isFavorite(id: Int): Boolean
 
