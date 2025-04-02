@@ -21,7 +21,7 @@ class RecipeViewModel(
     val viewState: StateFlow<ViewState> = MutableStateFlow(ViewState.Init)
 
     fun getRecipeById(id: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             (viewState as MutableStateFlow).emit(ViewState.Loading)
             try {
                 val recipe = repository.getRecipeById(id)
@@ -33,7 +33,7 @@ class RecipeViewModel(
     }
 
     fun addRecipeToFavorites(recipe: Recipe) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             if(repository.isFavorite(recipe.iid)){
                 repository.deleteItem(recipe)
             } else {

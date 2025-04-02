@@ -2,16 +2,17 @@ package com.example.testapplication.data
 
 import com.example.testapplication.data.api.ApiService
 import com.example.testapplication.recipe.Recipes
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import okio.IOException
-import retrofit2.Response
 
 class OfflineRecipesRepository(private val recipeDao: RecipeDao, private val apiService: ApiService) : RecipesRepository {
     override fun getAllRecipesStream(): Flow<List<Recipe>> = recipeDao.getAllRecipes()
 
-    override suspend fun getRecipeById(id: Int): Recipe {
+    override suspend fun getRecipeById(id: Int): Recipe = withContext(Dispatchers.IO) {
         if(isFavorite(id)){
-            return recipeDao.getRecipe(id)
+            return@withContext recipeDao.getRecipe(id)
         } else {
             val responseRecipe = apiService.getRecipeById(id)
             val responsePrep = apiService.getRecipeInstructionsById(id)
@@ -31,9 +32,9 @@ class OfflineRecipesRepository(private val recipeDao: RecipeDao, private val api
                         ingredients = bodyRecipe.ingredients as List<Ingredient>,
                         steps = bodyPrep as List<PrepPart>,
                     )
-                    return recipe
+                    return@withContext recipe
                 } else {
-                    return responseRecipe.body() as Recipe
+                    return@withContext responseRecipe.body() as Recipe
                 }
             } else {
                 throw IOException("Request not successful")
@@ -41,9 +42,13 @@ class OfflineRecipesRepository(private val recipeDao: RecipeDao, private val api
         }
     }
 
-    override suspend fun searchRecipes(query: String): Recipes? = apiService.searchRecipes(query).body()
+    override suspend fun searchRecipes(query: String): Recipes? = withContext(Dispatchers.IO) {
+        return@withContext apiService.searchRecipes(query).body()
+    }
 
-    override suspend fun getRandomRecipes(): Recipes? = apiService.getRandomRecipes().body()
+    override suspend fun getRandomRecipes(): Recipes? = withContext(Dispatchers.IO) {
+        return@withContext apiService.getRandomRecipes().body()
+    }
 
     override fun isFavorite(id: Int): Boolean = recipeDao.isFavorite(id)
 

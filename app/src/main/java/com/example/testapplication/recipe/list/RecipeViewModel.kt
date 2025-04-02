@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.testapplication.data.RecipesRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -15,13 +14,12 @@ class RecipeViewModel(private val repository: RecipesRepository) : ViewModel() {
     val viewState: StateFlow<ViewState> = MutableStateFlow(ViewState.Init)
 
     fun getRandomRecipes() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             (viewState as MutableStateFlow).emit(ViewState.Loading)
             try {
                 val recipes = repository.getRandomRecipes()
 
                 if (recipes != null){
-                    Log.d("RecipeViewModel", "$recipes")
                     (viewState as MutableStateFlow).emit(ViewState.Success(recipes.recipeList))
                 } else {
                     Log.e("RecipeViewModel", "Call failed no recipes found")
@@ -34,16 +32,14 @@ class RecipeViewModel(private val repository: RecipesRepository) : ViewModel() {
     }
 
     fun searchRecipes(query: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             (viewState as MutableStateFlow).emit(ViewState.Loading)
             try {
                 val recipes = repository.searchRecipes(query)
 
                 if (recipes != null){
-                    Log.d("RecipeViewModel", "$recipes")
                     (viewState as MutableStateFlow).emit(ViewState.Success(recipes.searchResults))
                 } else {
-                    Log.e("RecipeViewModel", "Call failed no recipes found")
                     (viewState as MutableStateFlow).emit(ViewState.Failure("No recipes found"))
                 }
             } catch (e: IOException) {
@@ -53,7 +49,7 @@ class RecipeViewModel(private val repository: RecipesRepository) : ViewModel() {
     }
 
     fun getFavorites() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             (viewState as MutableStateFlow).emit(ViewState.Loading)
 
             repository.getAllRecipesStream().collectLatest {recipes ->
@@ -63,7 +59,7 @@ class RecipeViewModel(private val repository: RecipesRepository) : ViewModel() {
     }
 
     fun addRecipeToFavorites(recipeIid: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val recipe = repository.getRecipeById(recipeIid)
             if(repository.isFavorite(recipeIid)){
                 repository.deleteItem(recipe)
